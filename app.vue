@@ -1,15 +1,17 @@
 <script setup lang="ts">
-const items = [{
-  label: 'Погода на сегодня',
-  content: 'This is the content shown for Tab1'
-}, {
-  label: 'Погода на 3 дня',
-  content: 'Finally, this is the content for Tab3'
-}]
+import 'assets/main.scss';
+
+import { ref } from 'vue';
+const activeKey = ref('today');
 </script>
 
 <template>
-  <UContainer>
-    <UTabs :items="items" />
-  </UContainer>
+  <div class="container">
+    <a-tabs v-model:activeKey="activeKey">
+      <a-tab-pane key="today" tab="Погода сегодня" force-render>
+        <Weather />
+      </a-tab-pane>
+      <a-tab-pane key="day3" tab="Погода на 3 дня">Content of Tab Pane 2</a-tab-pane>
+    </a-tabs>
+  </div>
 </template>
