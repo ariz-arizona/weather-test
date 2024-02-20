@@ -2,26 +2,27 @@
 import { ref } from 'vue';
 
 import type { SelectProps } from 'ant-design-vue';
-import type { T_cities, T_city } from '~/types';
+
 import { useCityStore } from '~/stores/city';
+import type { City, CityElement } from '~/types/city';
+
+const selectedCity = useCityStore()
 
 let currentValue = '';
 const value = ref();
 const options = ref<SelectProps['options']>([]);
-
-const selectedCity = useCityStore()
 
 const handleSearch = async (value: string) => {
     currentValue = value;
     if (value.length < 3) {
         return
     }
-    const { city: data } = await $fetch<T_cities>(`/api/city`, { query: { q: value } })
+    const { city: data } = await $fetch<City>(`/api/city`, { query: { q: value } })
     if (currentValue !== value) {
         return false
     }
     let optionsArray: SelectProps['options'] = []
-    data.forEach((r: T_city) => {
+    data.forEach((r: CityElement) => {
         optionsArray?.push({
             value: JSON.stringify({ lat: r.lat, lon: r.lon, name: r.name }),
             label: [r.name, r.state, r.country].filter(Boolean).join(', '),
