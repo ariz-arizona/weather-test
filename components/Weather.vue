@@ -1,6 +1,21 @@
 <script setup>
 import d2d from 'degrees-to-direction';
-const { error, pending, today: data } = await $fetch('/api/today')
+let { error, pending, today: data } = await $fetch('/api/today')
+
+const selectedCity = useCityStore()
+selectedCity.$subscribe(
+    async () => {
+        const d = await $fetch('/api/today', {
+            query: {
+                lan: selectedCity.lat,
+                lon: selectedCity.lon,
+            }
+        })
+        error = d.error
+        pending = d.pending
+        data = d.today
+    }
+)
 
 const windDirection = d2d(data.wind.deg)
 const translating = {
