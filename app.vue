@@ -11,7 +11,9 @@ const activeKey = ref('today');
       <a-tab-pane key="today" tab="Погода сегодня" force-render>
         <Weather />
       </a-tab-pane>
-      <a-tab-pane key="day3" tab="Погода на 3 дня">Content of Tab Pane 2</a-tab-pane>
+      <a-tab-pane key="day3" tab="Погода на 3 дня">
+        <Forecast />
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
