@@ -2,6 +2,8 @@ export default defineEventHandler(async (event) => {
     const { OWM_KEY, DEF_LAT, DEF_LON } = process.env
     const query = getQuery(event)
     const { lat = DEF_LAT, lon = DEF_LON } = query
+    if (!lat || !lon) return Error('no data')
+
     const data = await $fetch(`https://api.openweathermap.org/data/2.5/forecast`, {
         query: {
             lat,
@@ -13,7 +15,5 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    return {
-        forecast: data
-    }
+    return data
 })

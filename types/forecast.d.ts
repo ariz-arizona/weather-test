@@ -1,8 +1,4 @@
 export interface Forecast {
-    forecast: ForecastClass;
-}
-
-export interface ForecastClass {
     cod:     string;
     message: number;
     cnt:     number;

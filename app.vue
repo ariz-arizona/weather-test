@@ -7,7 +7,7 @@ const activeKey = ref('today');
 
 <template>
   <div class="container">
-    <a-space direction="vertical">
+    <a-space direction="vertical" style="width: 100%;">
       <City />
       <a-tabs v-model:activeKey="activeKey">
         <a-tab-pane key="today" tab="Погода сегодня" force-render>

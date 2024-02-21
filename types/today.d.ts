@@ -1,8 +1,4 @@
 export interface Today {
-    today: TodayClass;
-}
-
-export interface TodayClass {
     coord:      Coord;
     weather:    Weather[];
     base:       string;

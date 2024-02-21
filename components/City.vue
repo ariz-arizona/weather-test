@@ -38,6 +38,10 @@ const handleChange = (value: SelectProps['value']) => {
         selectedCity.lat = v.lat
         selectedCity.lon = v.lon
         selectedCity.name = v.name
+    } else {
+        selectedCity.lat = undefined
+        selectedCity.lon = undefined
+        selectedCity.name = undefined
     }
 };
 
@@ -49,6 +53,6 @@ const handleChange = (value: SelectProps['value']) => {
         </a-typography-title>
         <a-select ref="select" v-model:value="value" show-search placeholder="Введите название города" style="width: 100%"
             :default-active-first-option="false" :show-arrow="false" :filter-option="false" :not-found-content="null"
-            :options="options" @search="handleSearch" @change="handleChange" />
+            :options="options" @search="handleSearch" @change="handleChange" :allowClear="true" />
     </a-space>
 </template>
