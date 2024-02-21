@@ -1,41 +1,40 @@
 <script setup lang="ts">
-import type { Forecast } from '~/types/forecast';
+import type { Forecast, ForecastItem } from '~/types/forecast';
 
 const selectedCity = useCityStore();
+const dataSource: Ref<{ [key: string]: any }[]> = ref([{ title: 'Температура, ℃' }, { title: 'Ветер, м/с' }, { title: 'Влажность, %' }]);
+const columns = [{ title: '', dataIndex: 'title', key: 'title' }];
 
 const { pending, error, data } = await useAsyncData<Forecast>(
     'forecast',
     () => {
         return $fetch('/api/forecast', {
-            query: { lat: selectedCity.lat, lon: selectedCity.lon }
+            query: { lat: selectedCity.lat, lon: selectedCity.lon },
+            onResponse: (res) => {
+                res.response._data.list.map((el: ForecastItem) => {
+                    const date = new Date(el.dt * 1000)
+                    const day = date.getUTCDate().toString()
+                    const time = date.toLocaleTimeString('ru-RU', { hour: "2-digit", minute: "2-digit" })
+                    if (!columns.find(el => el.dataIndex === day)) {
+                        columns.push({
+                            title: date.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' }),
+                            dataIndex: day,
+                            key: day,
+                        })
+                    }
+                    [el.main.temp, el.wind.speed, el.main.humidity].map((txt, i) => {
+                        if (!dataSource.value[i][day]) {
+                            dataSource.value[i][day] = { [time]: txt }
+                        } else {
+                            dataSource.value[i][day][time] = txt
+                        }
+                    })
+                })
+            }
         })
     },
     { watch: [selectedCity] }
 );
-
-const dataSource: { [key: string]: any }[] = [{ title: 'Температура, ℃' }, { title: 'Ветер, м/с' }, { title: 'Влажность, %' }];
-const columns = [{ title: '', dataIndex: 'title', key: 'title' }];
-
-data.value?.list.map((el, i) => {
-    const date = new Date(el.dt * 1000)
-    const day = date.getUTCDate().toString()
-    const time = date.toLocaleTimeString('ru-RU', { hour: "2-digit", minute: "2-digit" })
-    if (!columns.find(el => el.dataIndex === day)) {
-        columns.push({
-            title: date.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' }),
-            dataIndex: day,
-            key: day,
-        })
-    }
-    [el.main.temp, el.wind.speed, el.main.humidity].map((txt, i) => {
-        if (!dataSource[i][day]) {
-            dataSource[i][day] = { [time]: txt }
-        } else {
-            dataSource[i][day][time] = txt
-        }
-    })
-})
-
 </script>
 <template>
     <div v-if="!selectedCity.lon || !selectedCity.lat">
