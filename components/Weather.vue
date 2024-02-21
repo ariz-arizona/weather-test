@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import d2d from 'degrees-to-direction';
-import type { Today } from '~/types/today';
+import type { TodayClass } from '~/types/today';
 
-let city = reactive({ lat: '', lon: '' })
-let { error, pending, data: arr } = await useFetch<Today>('/api/today', { query: { lat: city.lat, lon: city.lon } })
-let data = arr?.value?.today
+let data = reactive(<TodayClass>{});
 
-const selectedCity = useCityStore()
-selectedCity.$subscribe(
-    async () => {
-        console.log(selectedCity)
-        city.lat = selectedCity.lat
-        city.lon = selectedCity.lon
-    }
-)
+const selectedCity = useCityStore();
+
+const todayData = await useAsyncData(
+    'today',
+    () => {
+        return $fetch('/api/today', {
+            query: { lat: selectedCity.lat, lon: selectedCity.lon },
+            async onResponse(res) {
+                data = Object.assign(data, res.response._data.today)
+            }
+        })
+    },
+    { watch: [selectedCity] }
+);
+data = Object.assign(data, todayData.data.value?.today)
 
 const windDirection = d2d(data?.wind.deg)
 type windTranslate = {
@@ -30,10 +35,10 @@ const windDirectionFormat = [...windDirection].map((el) => translating[el]).join
 const rowJustify = "middle"
 </script>
 <template>
-    <div v-if="pending">
+    <div v-if="todayData.pending.value">
         Loading...
     </div>
-    <div v-else-if="error">
+    <div v-else-if="todayData.error.value">
         Error...
     </div>
     <a-row :align="rowJustify" v-else>
