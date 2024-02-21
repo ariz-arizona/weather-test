@@ -26,6 +26,8 @@ const translating: windTranslate = {
     'W': 'запад',
 }
 const windDirectionFormat = [...windDirection].map((el) => translating[el]).join('-')
+
+const rowJustify = "middle"
 </script>
 <template>
     <div v-if="pending">
@@ -34,7 +36,7 @@ const windDirectionFormat = [...windDirection].map((el) => translating[el]).join
     <div v-else-if="error">
         Error...
     </div>
-    <a-row align="middle" v-else>
+    <a-row :align="rowJustify" v-else>
         <a-col span="24">
             <a-typography-title :level="3">
                 Погода на сегодня в {{ data?.name }}
@@ -42,7 +44,7 @@ const windDirectionFormat = [...windDirection].map((el) => translating[el]).join
         </a-col>
         <a-col span="10">
             <a-typography>
-                <a-image :src="`http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`" :width="100"
+                <a-image :src="`http://openweathermap.org/img/wn/${data?.weather[0].icon}@2x.png`" :width="100"
                     :preview="false" /> сегодня {{ data?.weather[0].description }}
             </a-typography>
         </a-col>
